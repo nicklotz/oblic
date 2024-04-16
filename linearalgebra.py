@@ -9,72 +9,57 @@
 
 import numpy as np
 
-# Alpha and beta are the amplitudes of the |0⟩ and |1⟩ states
-def qubit_to_column_vector(alpha, beta): 
-    # Default column vector for |0⟩ state
-    ketzero_unit_column_vector = np.array([[1], [0]])  
-    # Default column vector for |1⟩ state
-    ketone_unit_column_vector = np.array([[0], [1]])  
-    # Column vector is a linear combination of the |0⟩ and |1⟩ states
-    return alpha*ketzero_unit_column_vector + beta*ketone_unit_column_vector
+# Function to convert qubit amplitudes to a column vector representation
+def qubit_to_column_vector(alpha, beta):
+    # Create and return a 2x1 numpy array representing the qubit state
+    return np.array([[alpha], [beta]])
 
-# Calculate probabilities of the qubit being in |0⟩ and |1⟩ states
+# Function to calculate the probabilities of a qubit being in each state
 def calculate_probabilities(column_vector):
-    # Probabilities are the square of the absolute values of the amplitudes
+    # Square the absolute values of the elements to get probabilities
     return np.abs(column_vector)**2 
 
-# Calculate transpose of a vector by swapping rows and columns
-def transpose_vector(vector):
-    # Transpose of a column vector is a row vector
-    return np.transpose(vector) 
-
-# Calculate complex conjugate of a vector
-def complex_conjugate(vector):
-    # Complex conjugate of a column vector is a column vector with complex conjugate of the elements
-    return np.conj(vector) 
-
-# Calculate conjugate transpose of a vector
-def conjugate_transpose(vector):
-    # Conjugate transpose of a column vector is a row vector with complex conjugate of the elements
-    return np.conj(np.transpose(vector)) 
-
-# Ket is a column vector which is the default representation of a qubit
+# Class representing a ket vector (standard quantum state vector)
 class ket:
-    # Alpha and beta are the amplitudes of the |0⟩ and |1⟩ states
-    def __init__(self, alpha, beta): 
-        self.column_vector = qubit_to_column_vector(alpha, beta) 
-        self.probabilities = calculate_probabilities(self.column_vector)
-        self.transpose = transpose_vector(self.column_vector) 
-        self.complex_conjugate = complex_conjugate(self.column_vector) 
-        self.conjugate_transpose = conjugate_transpose(self.column_vector) 
-
-# Bra is a row vector which is the conjugate transpose of a ket
-class bra:
+    # Initialize the ket vector with amplitudes for the |0⟩ and |1⟩ states
     def __init__(self, alpha, beta):
-        self.column_vector = qubit_to_column_vector(alpha, beta) 
-        self.probabilities = calculate_probabilities(self.column_vector)  
-        self.transpose = transpose_vector(self.column_vector)
-        self.complex_conjugate = complex_conjugate(self.column_vector) 
-        self.conjugate_transpose = conjugate_transpose(self.column_vector) 
+        # Store the column vector representing the quantum state
+        self.column_vector = qubit_to_column_vector(alpha, beta)
+        # Calculate and store the probabilities of the state
+        self.probabilities = calculate_probabilities(self.column_vector)
+        # Calculate and store the conjugate transpose (bra vector) of the ket
+        self.conjugate_transpose = self.column_vector.conj().T
 
-# Convert a ket to a bra by taking the conjugate transpose of the ket
+# Class representing a bra vector (conjugate transpose of a ket vector)
+class bra:
+    # Initialize the bra vector based on a given ket vector
+    def __init__(self, ket):
+        # Store the row vector which is the conjugate transpose of the ket's column vector
+        self.row_vector = ket.conjugate_transpose
+        # Calculate the probabilities of the state based on the row vector
+        self.probabilities = calculate_probabilities(self.row_vector.T)  # T converts it back to column for calculation
+
+# Function to convert a ket vector to a bra vector
 def convert_ket_to_bra(ket):
-    return bra(np.conj(ket.column_vector[0][0]), np.conj(ket.column_vector[1][0]))
+    # Create and return a bra object based on the provided ket
+    return bra(ket)
 
-# Convert a bra to a ket by taking the conjugate transpose of the bra
-def convert_bra_to_ket(bra): 
-    return ket(np.conj(bra.column_vector[0][0]), np.conj(bra.column_vector[1][0]))
+# Function to convert a bra vector back to a ket vector
+def convert_bra_to_ket(bra):
+    # Calculate the original amplitudes by taking conjugate transpose of the bra and convert it to a ket
+    return ket(bra.row_vector.conj().T[0][0], bra.row_vector.conj().T[1][0])
 
+# Calculate the inner product of a bra and a ket vector
+def inner_product(bra, ket):
+    # Calculate the dot product between bra's row vector and ket's column vector
+    return np.dot(bra.row_vector, ket.column_vector)[0][0]
 
 # EXAMPLES
 
-# Example complex ket and ra
-example_complex_ket = ket((2/3), ((1/3)-(2j/3)))
-example_complex_bra = convert_ket_to_bra(example_complex_ket) 
+# Example complex ket and bra
+example_ket = ket(((3+1.73205080757j)/4), (1/2))
+example_bra = convert_ket_to_bra(ket((1/4), (3.87298334621/4))) 
 
 # Print the ket column vector
-print("Ket is: ", example_complex_ket.column_vector) 
-
-# Print the bra column vector after converting ket to bra
-print("Bra after converting ket to bra is: ", example_complex_bra.column_vector)
+print("Inner product is: ", inner_product(example_bra, example_ket))
 
