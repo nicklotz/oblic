@@ -60,6 +60,6 @@ def inner_product(bra, ket):
 example_ket = ket(((3+1.73205080757j)/4), (1/2))
 example_bra = convert_ket_to_bra(ket((1/4), (3.87298334621/4))) 
 
-# Print the ket column vector
+# Output inner product of example vectors
 print("Inner product is: ", inner_product(example_bra, example_ket))
 
