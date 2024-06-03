@@ -54,6 +54,20 @@ def inner_product(bra, ket):
     # Calculate the dot product between bra's row vector and ket's column vector
     return np.dot(bra.row_vector, ket.column_vector)[0][0]
 
+# Determine if state (assume ket) is normalized
+def is_normalized(state):
+    ket_state = state
+    # Calculate bra of state
+    bra_state = convert_ket_to_bra(state)
+    # Calc inner product of state with respect to itself
+    if inner_product(bra_state, ket_state) == 1:
+    # If inner product is 1, state is normalized
+        return True
+    # If inner product not 1, state not normalized
+    else:
+        return False
+    
+
 # EXAMPLES
 
 # Example complex ket and bra
