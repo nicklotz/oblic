@@ -71,9 +71,17 @@ def is_normalized(state):
 # EXAMPLES
 
 # Example complex ket and bra
-example_ket = ket(((3+1.73205080757j)/4), (1/2))
-example_bra = convert_ket_to_bra(ket((1/4), (3.87298334621/4))) 
+# example_ket = ket(((3+1.73205080757j)/4), (1/2))
+# example_bra = convert_ket_to_bra(ket((1/4), (3.87298334621/4))) 
 
 # Output inner product of example vectors
-print("Inner product is: ", inner_product(example_bra, example_ket))
+# print("Inner product is: ", inner_product(example_bra, example_ket))
 
+# Determine if normalized
+example_state = ket(2, 3j)
+print("Inner product is: ", inner_product(convert_ket_to_bra(example_state), example_state))
+print("Is normalized?", is_normalized(example_state))
+coeff = 1/np.sqrt(13)
+example_state = ket(coeff*2, coeff*3j)
+print("Inner product is: ", inner_product(convert_ket_to_bra(example_state), example_state))
+print("Is normalized?", is_normalized(example_state))
