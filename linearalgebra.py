@@ -50,23 +50,29 @@ def convert_bra_to_ket(bra):
     return ket(bra.row_vector.conj().T[0][0], bra.row_vector.conj().T[1][0])
 
 # Calculate the inner product of a bra and a ket vector
-def inner_product(bra, ket):
+def inner_product(state1, state2):
+    bra_state1 = convert_ket_to_bra(state1)
     # Calculate the dot product between bra's row vector and ket's column vector
-    return np.dot(bra.row_vector, ket.column_vector)[0][0]
+    return np.dot(bra_state1.row_vector, state2.column_vector)[0][0]
 
 # Determine if state (assume ket) is normalized
 def is_normalized(state):
-    ket_state = state
-    # Calculate bra of state
-    bra_state = convert_ket_to_bra(state)
     # Calc inner product of state with respect to itself
-    if inner_product(bra_state, ket_state) == 1:
+    if inner_product(state, state) == 1:
     # If inner product is 1, state is normalized
         return True
     # If inner product not 1, state not normalized
     else:
         return False
-    
+
+# Determine if states are orthogonal
+# state1 must be bra, state2 must be ket
+def is_orthogonal(state1, state2):
+    if inner_product(state1, state2) == 0:
+        return True
+    else:
+        return False
+
 
 # EXAMPLES
 
@@ -78,10 +84,31 @@ def is_normalized(state):
 # print("Inner product is: ", inner_product(example_bra, example_ket))
 
 # Determine if normalized
-example_state = ket(2, 3j)
-print("Inner product is: ", inner_product(convert_ket_to_bra(example_state), example_state))
-print("Is normalized?", is_normalized(example_state))
-coeff = 1/np.sqrt(13)
-example_state = ket(coeff*2, coeff*3j)
-print("Inner product is: ", inner_product(convert_ket_to_bra(example_state), example_state))
-print("Is normalized?", is_normalized(example_state))
+# example_state = ket(2, 3j)
+# print("Inner product is: ", inner_product(convert_ket_to_bra(example_state), example_state))
+# print("Is normalized?", is_normalized(example_state))
+# coeff = 1/np.sqrt(13)
+# example_state = ket(coeff*2, coeff*3j)
+# print("Inner product is: ", inner_product(convert_ket_to_bra(example_state), example_state))
+# print("Is normalized?", is_normalized(example_state))
+
+
+# Determine if orthogonal - example 1
+# minus_ket = ket(1/np.sqrt(2), 1/np.sqrt(2))
+# plus_ket = ket(1/np.sqrt(2), -1/np.sqrt(2))
+# print("Inner product is: ", inner_product(minus_ket, plus_ket))
+# print("Is orthogonal?", is_orthogonal(minus_ket, plus_ket))
+
+# Determine if orthogonal - example 2
+# zero_ket = ket(1, 0)
+# plus_ket = ket(1/np.sqrt(2), -1/np.sqrt(2))
+# print("Inner product is: ", inner_product(zero_ket, plus_ket))
+# print("Is orthogonal?", is_orthogonal(zero_ket, plus_ket))
+
+# Determine if orthogonal - example 3
+# state1 = ket((1 + np.sqrt(3)*1j)/4, (np.sqrt(2) - 1j)/2)
+# state2 = ket((np.sqrt(2) + 1j)/2, ((-1 + np.sqrt(3)*1j)/4)) 
+# print("Inner product is: ", inner_product(state1, state2))
+# print("Is orthogonal?", is_orthogonal(state1, state2))
+
+
