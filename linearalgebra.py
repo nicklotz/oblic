@@ -50,18 +50,21 @@ def convert_bra_to_ket(bra):
     return ket(bra.row_vector.conj().T[0][0], bra.row_vector.conj().T[1][0])
 
 # Calculate the inner product of a bra and a ket vector
-def inner_product(state1, state2):
+def inner_product(state1, state2, tolerance=1e-10):
     bra_state1 = convert_ket_to_bra(state1)
-    # Calculate the dot product between bra's row vector and ket's column vector
-    return np.dot(bra_state1.row_vector, state2.column_vector)[0][0]
+    result = np.dot(bra_state1.row_vector, state2.column_vector)[0][0]
+    if abs(result) < tolerance:
+        return 0
+    else:
+        return result
 
 # Determine if state (assume ket) is normalized
-def is_normalized(state):
-    # Calc inner product of state with respect to itself
-    if inner_product(state, state) == 1:
-    # If inner product is 1, state is normalized
+def is_normalized(state, tolerance=1e-10):
+    # Calculate the inner product of the state with itself
+    norm = inner_product(state, state)
+    # Check if the absolute difference from 1 is within the tolerance
+    if abs(norm - 1) < tolerance:
         return True
-    # If inner product not 1, state not normalized
     else:
         return False
 
@@ -69,6 +72,13 @@ def is_normalized(state):
 # state1 must be bra, state2 must be ket
 def is_orthogonal(state1, state2):
     if inner_product(state1, state2) == 0:
+        return True
+    else:
+        return False
+
+# States are orthonormal if normalized and orthogonal
+def is_orthonormal(state1, state2):
+    if (is_normalized(state1) and is_normalized(state2) and is_orthogonal(state1, state2)):
         return True
     else:
         return False
@@ -111,4 +121,13 @@ def is_orthogonal(state1, state2):
 # print("Inner product is: ", inner_product(state1, state2))
 # print("Is orthogonal?", is_orthogonal(state1, state2))
 
-
+# Determine if orthonormal - example 1
+minus_ket = ket(1/np.sqrt(2), 1/np.sqrt(2))
+plus_ket = ket(1/np.sqrt(2), -1/np.sqrt(2))
+print("Inner product of state1 is ", inner_product(minus_ket, minus_ket))
+print("Inner product of state2 is ", inner_product(plus_ket, plus_ket))
+print("Inner product of state1 and state2: ", inner_product(minus_ket, plus_ket))
+print("Is orthogonal?", is_orthogonal(minus_ket, plus_ket))
+print("State1 normalized?", is_normalized(minus_ket))
+print("State2 normalized?", is_normalized(plus_ket))
+print("Is orthonormal?", is_orthonormal(minus_ket, plus_ket))
